@@ -1,5 +1,7 @@
-# Design of food preparation conversational agent
+# Conversational agent Sous Chef Susana
+### *Design of a food preparation conversational agent*
 ### WiDS-Miami-2021-Abstract
+
 
 Assume, we would like to become a better chefs or cooks since we missed the opportunity to acquire solid cooking skills
 during studying for many years. 
