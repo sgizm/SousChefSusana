@@ -45,7 +45,7 @@ including introspective look over cooking history and personal preferences.
 
 ## Design diagram
 
-[![](https://github.com/sgizm/SousChefSusana/raw/main/Diagrams/Sous-Chef-Susana-design.png)](https://github.com/sgizm/SousChefSusana/raw/main/Diagrams/Sous-Chef-Susana-design.pdf)
+[![](./Diagrams/Sous-Chef-Susana-design.png)](./Diagrams/Sous-Chef-Susana-design.pdf)
 
 ------
 
