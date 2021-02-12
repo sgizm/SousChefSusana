@@ -11,6 +11,8 @@ Its features include personalization, recommendations, (real-time) cooking instr
 The organizational documents are used to enumerate and prioritize 
 the research, design, and implementation of Sous Chef Susana's (sub-)modules.
 
+-----
+
 ## Motivation
 
 Food is essential to life, but cooking your own food is optional. 
@@ -38,3 +40,36 @@ cooking and creating cooking plans (or just being a successful causal chef)
 is a personal process that implies that learnings should be collected and utilized. 
 Existing solutions do not aim at creating personalized cooking plans built upon various stages of preparation, 
 including introspective look over cooking history and personal preferences.
+
+------
+
+## Design diagram
+
+[![](./Diagrams/Sous-Chef-Susana-design.png)](./Diagrams/Sous-Chef-Susana-design.pdf)
+
+------
+
+## Example commands / dialogs
+
+```
+what dishes can I cook within two hours
+which one has the simplest recipe
+```
+
+```
+suggest six Mediterranean dishes for the next ten days
+use ingredients budget within $90
+```
+
+```
+what people like me ate in the last month
+what is the ingredients breakdown
+```
+
+```
+instruct me to cook moussaka
+```
+
+-----
+
+
