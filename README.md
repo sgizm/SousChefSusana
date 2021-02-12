@@ -38,3 +38,7 @@ cooking and creating cooking plans (or just being a successful causal chef)
 is a personal process that implies that learnings should be collected and utilized. 
 Existing solutions do not aim at creating personalized cooking plans built upon various stages of preparation, 
 including introspective look over cooking history and personal preferences.
+
+
+Sezin Yaman
+e-mail: yaman.sezin@gmail.com
