@@ -45,29 +45,29 @@ including introspective look over cooking history and personal preferences.
 
 ## Design diagram
 
-[![](./Diagrams/Sous-Chef-Susana-design.png)](./Diagrams/Sous-Chef-Susana-design.pdf)
+[![](https://github.com/sgizm/SousChefSusana/raw/main/Diagrams/Sous-Chef-Susana-design.png)](https://github.com/sgizm/SousChefSusana/raw/main/Diagrams/Sous-Chef-Susana-design.pdf)
 
 ------
 
 ## Example commands / dialogs
 
 ```
-what dishes can I cook within two hours
-which one has the simplest recipe
+What dishes can I cook within two hours?
+Which one has the simplest recipe?
 ```
 
 ```
-suggest six Mediterranean dishes for the next ten days
-use ingredients budget within $90
+Suggest six Mediterranean dishes for the next ten days.
+Use ingredients budget within $90.
 ```
 
 ```
-what people like me ate in the last month
-what is the ingredients breakdown
+What people like me ate in the last month?
+What is the ingredients breakdown?
 ```
 
 ```
-instruct me to cook moussaka
+Instruct me to cook moussaka.
 ```
 
 -----
