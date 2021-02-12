@@ -73,8 +73,8 @@ Instruct me to cook moussaka.
 -----
 
 
-Sezin Yaman
-email: yaman.sezin@gmail.com 
+Sezin Yaman  
+email: yaman.sezin@gmail.com   
 
-Anton Antonov 
+Anton Antonov   
 email: antononcube@posteo.net 
