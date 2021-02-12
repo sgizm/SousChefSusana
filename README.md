@@ -1,6 +1,6 @@
 # Sous Chef Susana
 
-## What is this about
+## In brief
 
 This repository has the organizational files and design documents and diagrams for 
 the conversational agent Sous Chef Susana.
