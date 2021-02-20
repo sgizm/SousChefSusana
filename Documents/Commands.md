@@ -37,7 +37,8 @@ What is the ingredients breakdown?
 Instruct me to cook moussaka.
 
 What's going to expire in my fridge I don't cook?
-Tell me a dish with carrots
+Tell me a dish with carrots.
+What do I cook with noodles?
 I am sick, what do I cook?
 I don't have (much) time, what do I cook?
 Tell me a new / interesting recipe.
@@ -47,7 +48,8 @@ Can you suggest a local cusine?
 I want to eat something from Asia.
 Sugget a dish / recipe from Asia.
 What's fresh in the stores in my town right now?
-What other people are cooking right now?
+What are other people cooking right now?
+Recommend me Easter dishes.
 
 I only have eggs and potato, tell me what to cook.
 I have only 30 minutes to cook.
@@ -90,14 +92,16 @@ Suggest me a soup recipe without crema?
 Tell me salad recipe without onion.
 (what) can I bake without dough?
 
-Suggest something light / low calorie.
+Suggest something light / low calories.
 What do I do with eggs about to expire?
 I want to try African cusine.
 Show me some Finnish dishes.
-I'm feeling sick, suggest me a dish.
+I'm sick, suggest me a dish.
 
 What do I eat for breakfast / lunch / dinner?
 What kind of sandwich I make?
+Tell me different ways of making ommelette. 
 Tell me low carb dish suggestions
+Tell me healthy snacks.
 I have chicken but no vegetables. What do I make?
 Show me a rcipe I liked earlier.
