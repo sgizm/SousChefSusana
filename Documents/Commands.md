@@ -43,6 +43,8 @@ I don't have (much) time, what do I cook?
 Tell me a new / interesting recipe.
 Tell me some interesting Thai recipe.
 Tell me non-Asian recipe.
+Can you suggest a local cusine?
+I want to eat something from Asia.
 Sugget a dish / recipe from Asia.
 What's fresh in the stores in my town right now?
 What other people are cooking right now?
@@ -70,6 +72,7 @@ Why do you suggest this recipe?
 I don't like this dish / recipe.
 Suggest another.
 Give me three options.
+I don't like this suggestion / option / recipe.
 Which one has least calories?
 Should I cook Thai or Greek?
 Shoud I go to the restaurant or cook?
@@ -79,3 +82,22 @@ How many times I had Thai last year?
 How do I cook asparagus?
 What's the trick when cooking asparagus?
 What's the best way of frying vegetables?
+What dish I can make with cabbage?
+Can I make cabbage soup?
+What's the easist soup to make?
+What's the quickest soup to make?
+Suggest me a soup recipe without crema?
+Tell me salad recipe without onion.
+(what) can I bake without dough?
+
+Suggest something light / low calorie.
+What do I do with eggs about to expire?
+I want to try African cusine.
+Show me some Finnish dishes.
+I'm feeling sick, suggest me a dish.
+
+What do I eat for breakfast / lunch / dinner?
+What kind of sandwich I make?
+Tell me low carb dish suggestions
+I have chicken but no vegetables. What do I make?
+Show me a rcipe I liked earlier.
