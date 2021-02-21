@@ -105,7 +105,7 @@
 - Should I go to the restaurant or cook?
 - Should I have dessert?
 
-### Extensions
+#### Extensions
 
 - Give me three options.
 - I don't like this dish / recipe.
@@ -136,3 +136,15 @@
 - What do I eat for breakfast / lunch / dinner?
 - What kind of sandwich I make?
 - When was the last time I cooked Thai?
+
+-----
+
+## Feedback
+
+#### On suggestions
+
+TBD...
+
+#### On cooked dishes
+
+TBD...
