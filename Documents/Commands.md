@@ -58,6 +58,7 @@ Tell me something practical. Suggest something fast to make.
 I crave for dessert. Tell me a simple recipe.
 I want Thai food.
 I will have guests today. Tell me dinner suggestions.
+They don't eat meat.
 I want to cook enough for two days. Give me some options.
 Tell me Easter dishes.
 What others are eating in Helsinki right now?
@@ -65,6 +66,7 @@ What others are eating in Helsinki right now?
 
 I will go to the store. What should I get?
 What do I need to make lasagna?
+Do I have ingredients to make lasagna?
 How often people make lasagna?
 Do I have (enough) ingredients to make lasagna?
 
@@ -90,7 +92,7 @@ What's the easist soup to make?
 What's the quickest soup to make?
 Suggest me a soup recipe without crema?
 Tell me salad recipe without onion.
-(what) can I bake without dough?
+(What) can I bake without dough?
 
 Suggest something light / low calories.
 What do I do with eggs about to expire?
@@ -100,8 +102,19 @@ I'm sick, suggest me a dish.
 
 What do I eat for breakfast / lunch / dinner?
 What kind of sandwich I make?
-Tell me different ways of making ommelette. 
+Tell me different ways of making ommelette.
 Tell me low carb dish suggestions
 Tell me healthy snacks.
 I have chicken but no vegetables. What do I make?
-Show me a rcipe I liked earlier.
+Show me a recipe I liked earlier.
+
+Which dish has less / more calories, lemon chicken or chicken pasta?
+Tell me a fibre-rich dish.
+Find me Vietemese dishes with beef.
+Suggest me something that's not snack.
+I want to eat a French lunch.
+I want to lose weight. Suggest me food plan for next week.
+I don't like Spanish cusine. Suggest something else.
+Search for a / the recipe for lasagna
+I am in the mood for a snack
+Help me cook something / dish / meal / dinner with feta, tomatoes and potatoes.
