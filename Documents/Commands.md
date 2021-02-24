@@ -23,7 +23,7 @@
   - What time frame
   - Do you have any specific cuisine in mind?
   - Do you have any specific budget in mind?
-  
+
 #### Long-term
 
 - List me a cooking plan for this week.
@@ -34,7 +34,7 @@
 
 -----
 
-## Recommendations 
+## Recommendations
 
 #### By profile
 
@@ -53,6 +53,9 @@
 - Tell me low-carb dish suggestions
 - Tell me non-Asian recipe.
 - Tell me some interesting Thai recipe.
+- I want to eat a French lunch.
+- I am in the mood for a snack
+
 
 #### By constraints
 
@@ -66,6 +69,16 @@
 - Use ingredients budget within $90.
 - What dishes can I cook within two hours?
 - Which one has the simplest recipe?
+- My guests don't eat meat.
+- Can I make lasagna without meat?
+- Find me Vietemese dishes with beef.
+- Suggest me something that's not snack.
+- I don't like Spanish cusine. Suggest something else.
+- I don't eat chicken.
+- Search for a / the low calorie recipe for lasagna
+- Help me cook something / dish / meal / dinner with feta, tomatoes and potatoes.
+
+
 
 
 #### Collaborative filtering
@@ -74,6 +87,7 @@
 - What other people are cooking right now?
 - What others are eating in Helsinki right now?
 - What people like me ate in the last month?
+- What's popular / fresh in the grocery stores right now? 
 
 #### Explanations
 
@@ -82,7 +96,7 @@
 - Which one has the least calories?
 - Why do you suggest this recipe?
 
-#### Planning 
+#### Planning
 
 - I want to cook enough for two days. Give me some options.
 - I will have guests today. Tell me dinner suggestions.
@@ -90,6 +104,7 @@
 - What's fresh in the stores in my town right now?
 - What's going to expire in my fridge I don't cook?
 - What do I do with eggs about to expire?
+- I want to lose weight. Suggest me food plan for next week.
 
 #### Logistics / ingredients acquisition
 
