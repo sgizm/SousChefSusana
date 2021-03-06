@@ -80,14 +80,13 @@
 
 
 
-
 #### Collaborative filtering
 
 - Show me a recipe I liked earlier.
 - What other people are cooking right now?
 - What others are eating in Helsinki right now?
 - What people like me ate in the last month?
-- What's popular / fresh in the grocery stores right now? 
+- What's popular / fresh in the grocery stores right now?
 
 #### Explanations
 
