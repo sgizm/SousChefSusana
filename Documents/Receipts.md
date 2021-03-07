@@ -24,7 +24,7 @@ valio hedelmätarha tropic (juice)
 valio luomu vanhanajan täys (organic whole milk)
 Thai basilika
 pirkka naudan jauheliha (beef minced meet)
-pirkka tumma leivontasukla (dark baking chococalate)
+pirkka tumma leivontasukla (dark baking chocalate)
 
 # 25.02.2021
 pirkka tee earl grey (black tea)
@@ -33,10 +33,17 @@ snellman chorizo 250g (chorizo)
 suomalainen tomaatti (tomatoes)
 sitruuna (lemons)
 Poron ksavupalstirulla 100g (reindeer slices)
-pirkka tumma leivontasukla (dark baking chococalate)
+pirkka tumma leivontasukla (dark baking chocolate)
 omena (apples)
 kurkku (cucumbers)
 herkkukurkku (pickles)
+
+# 03.03.2021
+reuter gruffin vanilka 90 gr (ready made muffins)
+pirkka chips 300gr (crisps)
+taffel dippi 13g barbeque (dip sauce)
+maustekurkku (pickles)
+pirkka pähkinä-toffee 50g (chocolate bar)
 
 # 05.03.2021
 pirkka app-mangomehu (orange mango juice)

@@ -77,6 +77,7 @@
 - I don't eat chicken.
 - Search for a / the low calorie recipe for lasagna
 - Help me cook something / dish / meal / dinner with feta, tomatoes and potatoes.
+- I am starving.
 
 
 
@@ -111,6 +112,7 @@
 - How often people make lasagna?
 - I will go to the store. What should I get?
 - What do I need to make lasagna?
+- what can I cook without having to go to the store?
 
 #### Decision support
 
