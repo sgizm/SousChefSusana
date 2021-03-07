@@ -23,6 +23,10 @@ sapply(food_composition_data, dim)
 # USDA
 
 ```{r}
+make.names(getNutrientNames(food_database = "CIQUAL"))
+```
+
+```{r}
 getNutrientNames(food_database = "CIQUAL")
 ```
 ```{r}
