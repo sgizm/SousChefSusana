@@ -6,6 +6,7 @@ output: html_notebook
 ---
 
 ```{r setup}
+library(magrittr)
 library(Matrix)
 library(SparseMatrixRecommender)
 library(SMRMon)
