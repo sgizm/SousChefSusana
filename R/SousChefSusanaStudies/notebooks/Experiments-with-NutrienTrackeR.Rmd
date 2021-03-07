@@ -1,0 +1,36 @@
+---
+title: "Experiments with NutrienTrackeR"
+author: Anton Antonov
+date: 2021-02-28
+output: html_notebook
+---
+
+```{r setup}
+library(NutrienTrackeR)
+data(food_composition_data)
+```
+
+# Databases
+
+```{r}
+names(food_composition_data)
+```
+
+```{r}
+sapply(food_composition_data, dim)
+```
+
+# USDA
+
+```{r}
+getNutrientNames(food_database = "CIQUAL")
+```
+```{r}
+colnames(food_composition_data$USDA)
+```
+
+
+```{r}
+food_composition_data$USDA
+```
+

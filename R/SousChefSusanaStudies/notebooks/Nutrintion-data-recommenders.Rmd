@@ -1,0 +1,121 @@
+---
+title: "Nutrition data recommenders"
+author: Anton Antonov
+date: 2021-03-05
+output: html_notebook
+---
+
+```{r setup}
+library(Matrix)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(OutlierIdentifiers)
+library(SparseMatrixRecommenderInterfacesNoDT)
+library(tidyverse)
+
+library(NutrienTrackeR)
+data(food_composition_data)
+```
+
+# Recomender over USDA data only
+
+```{r}
+dfCompositionData <- as.data.frame(food_composition_data$USDA)
+names(dfCompositionData) <- gsub("\\W", ".", names(dfCompositionData))
+names(dfCompositionData) <- gsub("..", ".", names(dfCompositionData), fixed = T)
+names(dfCompositionData) <- gsub("\\.$", "", names(dfCompositionData))
+names(dfCompositionData) <- gsub("..", ".", names(dfCompositionData), fixed = T)
+lsNumericColumnNames <- setdiff( names(dfCompositionData ), c("food_id", "food_name", "food_group", "food_db"))
+dfCompositionData <- 
+  dfCompositionData %>% 
+  dplyr::mutate_at( .vars = lsNumericColumnNames, .funs = as.numeric)
+dfCompositionData
+```
+
+```{r}
+dfCatCompositionData <- 
+  dfCompositionData %>% 
+  dplyr::mutate_at( .vars = lsNumericColumnNames, .funs = SMRCategorizeToIntervals)
+dfCatCompositionData
+```
+
+```{r}
+smrCoreFoodComposition <- 
+  SMRMonUnit() %>% 
+  SMRMonCreate( data = dfCatCompositionData, tagTypes = setdiff(names(dfCompositionData), "food_name"), itemColumnName = "food_name", addTagTypesToColumnNamesQ = T) %>% 
+  SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
+```
+
+```{r}
+set.seed(332)
+lsaFoodNames <- 
+  LSAMonUnit( setNames(dfCompositionData$food_name, dfCompositionData$food_name) ) %>% 
+  LSAMonMakeDocumentTermMatrix(stemWordsQ = TRUE, stopWords = stopwords::stopwords() ) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
+```
+
+```{r rows.print=20}
+lsaFoodNames <- 
+  lsaFoodNames %>% 
+  LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
+```
+```{r, rows.print = 20, message=FALSE}
+dfWordsNNs <- 
+  lsaFoodNames %>% 
+  LSAMonExtractStatisticalThesaurus( 
+    searchWords = SnowballC::wordStem( c("alaska", "game", "chicken", "salmon", "yogurt", "milk", "coffee", "cold")), 
+    numberOfNearestNeighbors = 12, 
+    fixed = T) %>% 
+  LSAMonTakeValue %>% 
+  dplyr::bind_rows()
+purrr::map_df( split(dfWordsNNs, dfWordsNNs$SearchTerm), function(x) data.frame( SearchTerm = x$SearchTerm[[1]], Thesaurus = paste(x$Word.Word, collapse = ", ") ) )
+```
+
+```{r}
+matWords <- lsaFoodNames %>% LSAMonTakeWeightedDocumentTermMatrix
+matTopics <- lsaFoodNames %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+```
+
+```{r}
+smrFoodComposition <- 
+  smrCoreFoodComposition %>% 
+  SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
+```
+
+
+# Recommendation examples
+
+```{r, rows.print = 20}
+smrFoodComposition %>% 
+  SMRMonApplyTagTypeWeights( weights = c("Word"= 0, "Topic" = 1), default = 0) %>% 
+  SMRMonRecommend( "Milk, producer, fluid, 3.7% milkfat", nrecs = 20, removeHistoryQ = F) %>% 
+  SMRMonJoinAcross( data = dfCompositionData ) %>% 
+  SMRMonTakeValue
+```
+
+```{r, rows.print = 20}
+smrFoodComposition %>% 
+  SMRMonRecommendByProfile( profile = c("Word:milk", "Word:fat", "Word:vitamin"), nrecs = 20) %>% 
+  SMRMonJoinAcross( data = dfCompositionData ) %>% 
+  SMRMonTakeValue
+```
+
+
+```{r}
+colnames(SMRSubMatrix(smrFoodComposition, "Water.g"))
+```
+
+```{r, rows.print = 20}
+smrFoodComposition %>% 
+  SMRMonRecommendByProfile( "Water.g:4", nrecs = 20) %>% 
+  SMRMonJoinAcross( data = dfCompositionData ) %>% 
+  SMRMonTakeValue
+```
+
+
+
+
