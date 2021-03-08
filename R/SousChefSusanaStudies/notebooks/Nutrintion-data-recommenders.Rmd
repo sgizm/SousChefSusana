@@ -41,10 +41,6 @@ summary(dfCompositionData)
 ```
 
 ```{r}
-ParetoForCategoricalVector(dfCatCompositionData$Water.g)
-```
-
-```{r}
 dfCompositionData %>% 
   dplyr::filter( grepl( "Burger King", food_name, ignore.case = T) )
 ```
@@ -142,7 +138,7 @@ colnames(SMRSubMatrix(smrFoodComposition, "Water.g"))
 
 ```{r, rows.print = 20}
 smrFoodComposition %>% 
-  SMRMonRecommendByProfile( "Water.g:64.085≤v<69.478", nrecs = 20) %>% 
+  SMRMonRecommendByProfile( "Water.g:30≤v<40", nrecs = 20) %>% 
   SMRMonJoinAcross( data = dfCompositionData ) %>% 
   SMRMonTakeValue
 ```
