@@ -1,5 +1,5 @@
 
-install.packages("tidyverse", "rmarkdown", "shiny", "flexdashboard", "DT", "stopwords", "SnowballC", "NutrienTrackeR", "d3heatmap")
+install.packages("tidyverse", "rmarkdown", "shiny", "flexdashboard", "DT", "stopwords", "SnowballC", "NutrienTrackeR", "d3heatmap", "devtools")
 
 devtools::install_github( repo = "antononcube/R-projects", subdir = "ParetoPrincipleAdherence")
 devtools::install_github( repo = "antononcube/R-projects", subdir = "OutlierIdentifiers")
