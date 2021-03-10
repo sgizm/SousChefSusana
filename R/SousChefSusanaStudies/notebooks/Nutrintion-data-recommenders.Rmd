@@ -64,6 +64,8 @@ smrCoreFoodComposition <-
   SMRMonApplyTermWeightFunctions( "None", "None", "None")
 ```
 
+# Food names words topics
+
 ```{r}
 set.seed(665)
 lsaFoodNames <- 
@@ -89,6 +91,48 @@ dfWordsNNs <-
   dplyr::bind_rows()
 purrr::map_df( split(dfWordsNNs, dfWordsNNs$SearchTerm), function(x) data.frame( SearchTerm = x$SearchTerm[[1]], Thesaurus = paste(x$Word.Word, collapse = ", ") ) )
 ```
+
+# Words and phrases topics
+
+```{r}
+lsaFoodPhrases <- 
+  LSAMonUnit( setNames(dfCompositionData$food_name, dfCompositionData$food_name) ) %>% 
+  LSAMonMakeDocumentTermMatrix(stemWordsQ = FALSE, stopWords = NULL, splitPattern = ",\\s*" )
+```
+
+```{r}
+sample(colnames(lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix),100)
+```
+
+```{r}
+smat1 <- lsaFoodNames %>% LSAMonTakeDocumentTermMatrix
+smat2 <- lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix
+smat2 <- smat2[, setdiff(colnames(smat2), colnames(smat1))]
+lsaFoodWordsAndPhrases <- 
+  LSAMonUnit() %>% 
+  LSAMonSetDocumentTermMatrix( documentTermMatrix = cbind( smat1, smat2 ) ) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
+```
+
+```{r rows.print=20}
+lsaFoodWordsAndPhrases <- 
+  lsaFoodWordsAndPhrases %>% 
+  LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
+```
+```{r, rows.print = 20, message=FALSE}
+dfWordsNNs <- 
+  lsaFoodWordsAndPhrases %>% 
+  LSAMonExtractStatisticalThesaurus( 
+    searchWords = ( c("alaska", "game", "chicken", "salmon", "yogurt", "milk", "coffee", "pizza chain", "french")), 
+    numberOfNearestNeighbors = 12, 
+    fixed = T) %>% 
+  LSAMonTakeValue %>% 
+  dplyr::bind_rows()
+purrr::map_df( split(dfWordsNNs, dfWordsNNs$SearchTerm), function(x) data.frame( SearchTerm = x$SearchTerm[[1]], Thesaurus = paste(x$Word.Word, collapse = ", ") ) )
+```
+
+# Extend core food recommender
 
 ```{r}
 matWords <- lsaFoodNames %>% LSAMonTakeWeightedDocumentTermMatrix
@@ -181,6 +225,9 @@ dim(matLSAFoods)
 ```{r}
 lsFocusInds <- grep( "burger king|mcd", rownames(matLSAFoods), ignore.case = T )
 d3heatmap(t(matLSAFoods[lsFocusInds, ]), Rowv = T, colors = "Blues")
+```
+```{r}
+
 ```
 
 
