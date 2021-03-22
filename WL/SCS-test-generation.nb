@@ -1,0 +1,424 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     18038,        416]
+NotebookOptionsPosition[     16105,        377]
+NotebookOutlinePosition[     16506,        393]
+CellTagsIndexPosition[     16463,        390]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Sous Chef Susana test generation", "Title",
+ CellChangeTimes->{{3.82513308367369*^9, 3.8251330862576733`*^9}, {
+  3.8253687454404287`*^9, 
+  3.8253687628111153`*^9}},ExpressionUUID->"6eaba7c5-7c5c-4d35-8b82-\
+47eb04ee1e38"],
+
+Cell["\<\
+Anton Antonov
+Sous Chef Susana at GitHub
+March 2021\
+\>", "Text",
+ CellChangeTimes->{{3.824462197194969*^9, 
+  3.824462214574891*^9}},ExpressionUUID->"e1f16bfb-c55f-4309-92b4-\
+05bd981f37a5"],
+
+Cell[CellGroupData[{
+
+Cell["Load packages", "Section",
+ CellChangeTimes->{{3.8225353558220987`*^9, 
+  3.822535358690991*^9}},ExpressionUUID->"31b6c125-28e2-4cac-9dab-\
+557d85937522"],
+
+Cell[BoxData[
+ RowBox[{"Get", "[", 
+  "\"\<https://raw.githubusercontent.com/antononcube/ConversationalAgents/\
+master/Packages/WL/RakuGrammarClassesGeneration.m\>\"", "]"}]], "Input",
+ CellChangeTimes->{{3.8253688240493*^9, 
+  3.825368825720868*^9}},ExpressionUUID->"aa734e38-3f04-4209-a59b-\
+e8578eee4c79"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Ingredients query", "Section",
+ CellChangeTimes->{{3.825135316440556*^9, 
+  3.825135320393404*^9}},ExpressionUUID->"c0344598-464f-4205-8d24-\
+73580eafcaf7"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lsTestCommands", "=", 
+   RowBox[{"{", 
+    RowBox[{
+    "\"\<INGREDIENTSQUERY what number of dishes have INGREDIENTNAME\>\"", ",",
+      "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY what number of dishes contain INGREDIENTNAME\>\"", 
+     ",", "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY what dishes contain INGREDIENTNAME\>\"", ",", 
+     "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY how many dishes contain INGREDIENTNAME\>\"", ",", 
+     "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY how many recipes do you know with INGREDIENTNAME\>\
+\"", ",", "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY which recipes do you to have the ingredients \
+INGREDIENTNAME\>\"", ",", "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY which recipes have the ingredient INGREDIENTNAME\>\
+\"", ",", "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY which dishes have the ingredients INGREDIENTNAME\>\
+\"", ",", "\[IndentingNewLine]", 
+     "\"\<INGREDIENTSQUERY which dishes have the ingredient \
+INGREDIENTNAME\>\""}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"lsTestCommands", "=", 
+  RowBox[{"StringTrim", "[", 
+   RowBox[{"StringReplace", "[", 
+    RowBox[{"lsTestCommands", ",", 
+     RowBox[{"\"\<INGREDIENTSQUERY\>\"", "\[Rule]", "\"\<\>\""}]}], "]"}], 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.825133087235837*^9, 3.825133094764703*^9}, {
+  3.8251331965191107`*^9, 3.825133246370738*^9}, {3.8251353024008713`*^9, 
+  3.825135307471077*^9}},ExpressionUUID->"862faa08-4ddc-4d7f-b865-\
+78aebacb0e7e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lsRakuTests", "=", 
+   RowBox[{"Union", "@", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"StringReplace", "[", 
+       RowBox[{
+        RowBox[{"RandomChoice", "[", "lsTestCommands", "]"}], ",", 
+        RowBox[{"\"\<INGREDIENTNAME\>\"", "\[Rule]", 
+         RowBox[{"RandomChoice", "[", 
+          RowBox[{"{", 
+           RowBox[{
+           "\"\<low carbs\>\"", ",", "\"\<sugars\>\"", ",", "\"\<protein\>\"",
+             ",", "\"\<fats\>\"", ",", "\"\<saturated fats\>\""}], "}"}], 
+          "]"}]}]}], "]"}], ",", "12"}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"GridTableForm", "[", 
+  RowBox[{"List", "/@", "lsRakuTests"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.825133203997713*^9, 3.8251332142399406`*^9}, {
+  3.82513325681255*^9, 3.825133361070302*^9}, {3.825133561444412*^9, 
+  3.825133568883877*^9}},
+ CellLabel->
+  "In[387]:=",ExpressionUUID->"1f1a27e3-f3bd-4b8e-86a7-1c57923002f3"],
+
+Cell[BoxData[
+ RowBox[{"StringRiffle", "[", 
+  RowBox[{
+   RowBox[{"Map", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+      "\"\<ok $pCOMMAND.parse('\>\"", "<>", "#", "<>", "\"\<'), '\>\"", "<>", 
+       "#", "<>", "\"\<';\>\""}], "&"}], ",", "lsRakuTests"}], "]"}], ",", 
+   "\"\<\\n\\n\>\""}], "]"}]], "Input",
+ CellChangeTimes->{{3.825133750487028*^9, 3.825133798252146*^9}, {
+  3.825133862828431*^9, 3.825133923681497*^9}},
+ CellLabel->
+  "In[393]:=",ExpressionUUID->"638afcfd-4913-4546-8560-1111543c3294"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Recommendations command", "Section",
+ CellChangeTimes->{{3.825135316440556*^9, 
+  3.825135339131433*^9}},ExpressionUUID->"690f5071-d44d-480f-9966-\
+80083cd9689f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lsTestCommands", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+    "\"\<RECS can you suggest dishes with INGREDIENTNAME\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS suggest a dish to cook\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS what to cook\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend dishes\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS suggest me courses\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend a few dishes\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS tell me a few courses\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend a dish\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend a course\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend a dish to cook\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend dishes for PERIOD\>\"", ",", 
+     "\[IndentingNewLine]", "\"\<RECS recommend courses for PERIOD\>\""}], 
+    "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"lsTestCommands", "=", 
+  RowBox[{"StringTrim", "[", 
+   RowBox[{"StringReplace", "[", 
+    RowBox[{"lsTestCommands", ",", 
+     RowBox[{"\"\<RECS\>\"", "\[Rule]", "\"\<\>\""}]}], "]"}], 
+   "]"}]}]}], "Input",
+ CellChangeTimes->{{3.825133087235837*^9, 3.825133094764703*^9}, {
+  3.8251331965191107`*^9, 3.825133246370738*^9}, {3.8251353024008713`*^9, 
+  3.825135307471077*^9}, {3.8251363127912397`*^9, 3.825136316068769*^9}, {
+  3.8251363827009287`*^9, 3.825136392757118*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"dbf61a03-71ca-4afb-9746-1a69bb39a881"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SeedRandom", "[", "832", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"lsRakuTests", "=", 
+   RowBox[{"Union", "@", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"StringReplace", "[", 
+       RowBox[{
+        RowBox[{"RandomChoice", "[", "lsTestCommands", "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"\"\<PERIOD\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<lunch\>\"", ",", "\"\<dinner\>\"", ",", "\"\<easter\>\""}], 
+             "}"}], "]"}]}], ",", 
+          RowBox[{"\"\<INGREDIENTNAME\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<low carbs\>\"", ",", "\"\<sugars\>\"", ",", 
+              "\"\<protein\>\"", ",", "\"\<fats\>\"", ",", 
+              "\"\<saturated fats\>\""}], "}"}], "]"}]}]}], "}"}]}], "]"}], 
+      ",", "50"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"GridTableForm", "[", 
+  RowBox[{"List", "/@", "lsRakuTests"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.825133203997713*^9, 3.8251332142399406`*^9}, {
+  3.82513325681255*^9, 3.825133361070302*^9}, {3.825133561444412*^9, 
+  3.825133568883877*^9}, {3.825136324783019*^9, 3.825136374018581*^9}, {
+  3.825136427401659*^9, 3.825136427608859*^9}, {3.825136475462716*^9, 
+  3.825136485246942*^9}, {3.8251515073990917`*^9, 3.825151510300578*^9}, {
+  3.825152604305704*^9, 3.825152628784422*^9}},
+ CellLabel->"In[30]:=",ExpressionUUID->"470ef42e-ae8d-4931-9867-60a8c4a2f50d"],
+
+Cell[BoxData[
+ RowBox[{"StringRiffle", "[", 
+  RowBox[{
+   RowBox[{"MapIndexed", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"\"\<## \>\"", "<>", 
+       RowBox[{"ToString", "[", 
+        RowBox[{"#2", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+        "]"}], "<>", "\"\<\\n\>\"", "<>", "\"\<ok $pCOMMAND.parse('\>\"", "<>",
+        "#", "<>", "\"\<'.lc),\\n'\>\"", "<>", "#", "<>", "\"\<';\>\""}], 
+      "&"}], ",", "lsRakuTests"}], "]"}], ",", "\"\<\\n\\n\>\""}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.825133750487028*^9, 3.825133798252146*^9}, {
+   3.825133862828431*^9, 3.825133923681497*^9}, {3.825136511106525*^9, 
+   3.825136513825994*^9}, 3.825151490696075*^9},
+ CellLabel->"In[33]:=",ExpressionUUID->"221a1167-2031-40da-85fb-867448e5a085"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Recommendations by profile command", "Section",
+ CellChangeTimes->{{3.825135316440556*^9, 3.825135339131433*^9}, {
+  3.825143090409902*^9, 
+  3.8251430987540417`*^9}},ExpressionUUID->"8bc71bb7-7a66-4f87-b03c-\
+eb43219f8471"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"lsTestCommands", "=", 
+   RowBox[{"ToLowerCaseWithExclusions", "@", 
+    RowBox[{"{", 
+     RowBox[{
+     "\"\<RECSBYPROFILE can you suggest a local cuisine\>\"", ",", 
+      "\"\<RECSBYPROFILE i am sick what do I cook\>\"", ",", 
+      "\"\<RECSBYPROFILE i want CUSINESPEC\>\"", ",", 
+      "\"\<RECSBYPROFILE i want to eat something from CUISINELOCATION\>\"", 
+      ",", "\"\<RECSBYPROFILE I want to try CUSINECOUNTRY cuisine\>\"", ",", 
+      "\"\<RECSBYPROFILE Im feeling sick suggest me a dish\>\"", ",", 
+      "\"\<RECSBYPROFILE Show me some CUSINECOUNTRY dishes\>\"", ",", 
+      "\"\<RECSBYPROFILE suggest a dish from CUISINELOCATION\>\"", ",", 
+      "\"\<RECSBYPROFILE suggest a recipe from CUISINELOCATION\>\"", ",", 
+      "\"\<RECSBYPROFILE suggest recipe from CUISINELOCATION\>\"", ",", 
+      "\"\<RECSBYPROFILE suggest something with INGREDIENTNAME\>\"", ",", 
+      "\"\<RECSBYPROFILE suggest something FOODQUALITY\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me SPECIALPERIOD dishes\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me a dish with INGREDIENTNAME\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me a new recipe\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me a interesting recipe\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me FOODQUALITY dish suggestions\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me non CUISINELOCATION recipe\>\"", ",", 
+      "\"\<RECSBYPROFILE tell me some interesting CUSINECOUNTRY recipe\>\"", 
+      ",", "\"\<RECSBYPROFILE i want to eat a CUSINECOUNTRY lunch\>\"", ",", 
+      "\"\<RECSBYPROFILE i am in the mood for a snack\>\""}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"lsTestCommands", "=", 
+   RowBox[{"Union", "@", 
+    RowBox[{"StringTrim", "[", 
+     RowBox[{"StringReplace", "[", 
+      RowBox[{"lsTestCommands", ",", 
+       RowBox[{"\"\<RECSBYPROFILE\>\"", "\[Rule]", "\"\<\>\""}]}], "]"}], 
+     "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"GridTableForm", "[", 
+  RowBox[{"List", "/@", "lsTestCommands"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.825133087235837*^9, 3.825133094764703*^9}, {
+  3.8251331965191107`*^9, 3.825133246370738*^9}, {3.8251353024008713`*^9, 
+  3.825135307471077*^9}, {3.8251363127912397`*^9, 3.825136316068769*^9}, {
+  3.8251363827009287`*^9, 3.825136392757118*^9}, {3.8251431215370407`*^9, 
+  3.82514313263827*^9}, {3.8251433153714437`*^9, 3.825143355510154*^9}, {
+  3.825143388116673*^9, 3.825143394036913*^9}, {3.825143484533082*^9, 
+  3.825143518289446*^9}, {3.8251436226109*^9, 3.825143643008292*^9}},
+ CellLabel->"In[5]:=",ExpressionUUID->"9834b6b4-04b0-4647-873a-6483d2951de5"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"SeedRandom", "[", "332", "]"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"lsRakuTests", "=", "\[IndentingNewLine]", 
+   RowBox[{"Union", "@", "\[IndentingNewLine]", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"StringReplace", "[", 
+       RowBox[{
+        RowBox[{"RandomChoice", "[", "lsTestCommands", "]"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"{", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"\"\<CUSINECOUNTRY\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<China\>\"", ",", "\"\<Germany\>\"", ",", "\"\<Italy\>\""}], 
+             "}"}], "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"\"\<CUISINELOCATION\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<Asia\>\"", ",", "\"\<Turkey\>\"", ",", "\"\<Greece\>\""}], 
+             "}"}], "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"\"\<CUSINESPEC\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<Chinese\>\"", ",", " ", "\"\<Asian food\>\"", ",", 
+              "\"\<German cuisine\>\"", ",", "\"\<local food\>\""}], "}"}], 
+            "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"\"\<SPECIALPERIOD\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{"\"\<Christmas\>\"", ",", "\"\<Easter\>\""}], "}"}], 
+            "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"\"\<PERIOD\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<lunch\>\"", ",", "\"\<dinner\>\"", ",", "\"\<easter\>\""}], 
+             "}"}], "]"}]}], ",", "\[IndentingNewLine]", 
+          RowBox[{"\"\<FOODQUALITY\>\"", "->", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<low calorie\>\"", ",", "\"\<high calorie\>\"", ",", 
+              "\"\<sweet\>\"", ",", "\"\<fatty\>\""}], "}"}], "]"}]}], ",", 
+          "\[IndentingNewLine]", 
+          RowBox[{"\"\<INGREDIENTNAME\>\"", "\[Rule]", 
+           RowBox[{"RandomChoice", "[", 
+            RowBox[{"{", 
+             RowBox[{
+             "\"\<low carbs\>\"", ",", "\"\<sugars\>\"", ",", 
+              "\"\<protein\>\"", ",", "\"\<fats\>\"", ",", 
+              "\"\<saturated fats\>\""}], "}"}], "]"}]}]}], 
+         "\[IndentingNewLine]", "}"}]}], "]"}], ",", "40"}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"GridTableForm", "[", 
+  RowBox[{"List", "/@", "lsRakuTests"}], "]"}]}], "Input",
+ CellChangeTimes->{{3.825133203997713*^9, 3.8251332142399406`*^9}, {
+  3.82513325681255*^9, 3.825133361070302*^9}, {3.825133561444412*^9, 
+  3.825133568883877*^9}, {3.825136324783019*^9, 3.825136374018581*^9}, {
+  3.825136427401659*^9, 3.825136427608859*^9}, {3.825136475462716*^9, 
+  3.825136485246942*^9}, {3.8251431408964767`*^9, 3.8251432971278048`*^9}, {
+  3.825143409276855*^9, 3.825143456234868*^9}, {3.825143540104994*^9, 
+  3.825143597303288*^9}, {3.8251436657209473`*^9, 3.825143672064241*^9}, {
+  3.825143960767889*^9, 3.8251439975149183`*^9}, {3.825144098919015*^9, 
+  3.8251441015336733`*^9}},
+ CellLabel->"In[8]:=",ExpressionUUID->"9f5e21db-3b0b-4226-a4cb-da83076188f9"],
+
+Cell[BoxData[
+ RowBox[{"StringRiffle", "[", 
+  RowBox[{
+   RowBox[{"MapIndexed", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"\"\<## \>\"", "<>", 
+       RowBox[{"ToString", "[", 
+        RowBox[{"#2", "\[LeftDoubleBracket]", "1", "\[RightDoubleBracket]"}], 
+        "]"}], "<>", "\"\<\\n\>\"", "<>", "\"\<ok $pCOMMAND.parse('\>\"", "<>",
+        "#", "<>", "\"\<'.lc),\\n'\>\"", "<>", "#", "<>", "\"\<';\>\""}], 
+      "&"}], ",", "lsRakuTests"}], "]"}], ",", "\"\<\\n\\n\>\""}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.825133750487028*^9, 3.825133798252146*^9}, {
+  3.825133862828431*^9, 3.825133923681497*^9}, {3.825136511106525*^9, 
+  3.825136513825994*^9}, {3.825144003243904*^9, 3.825144004283012*^9}, {
+  3.825144143594533*^9, 3.825144167821027*^9}},
+ CellLabel->"In[11]:=",ExpressionUUID->"f75a4065-742f-4b9f-a00b-57d977d11730"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{857, 1113},
+WindowMargins->{{1092, Automatic}, {116, Automatic}},
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"31fc064d-8b02-4b0c-9554-020965343ec1"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 229, 4, 98, "Title",ExpressionUUID->"6eaba7c5-7c5c-4d35-8b82-47eb04ee1e38"],
+Cell[812, 28, 201, 7, 81, "Text",ExpressionUUID->"e1f16bfb-c55f-4309-92b4-05bd981f37a5"],
+Cell[CellGroupData[{
+Cell[1038, 39, 160, 3, 67, "Section",ExpressionUUID->"31b6c125-28e2-4cac-9dab-557d85937522"],
+Cell[1201, 44, 308, 6, 52, "Input",ExpressionUUID->"aa734e38-3f04-4209-a59b-e8578eee4c79"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[1546, 55, 162, 3, 67, "Section",ExpressionUUID->"c0344598-464f-4205-8d24-73580eafcaf7"],
+Cell[1711, 60, 1565, 32, 220, "Input",ExpressionUUID->"862faa08-4ddc-4d7f-b865-78aebacb0e7e"],
+Cell[3279, 94, 959, 23, 111, "Input",ExpressionUUID->"1f1a27e3-f3bd-4b8e-86a7-1c57923002f3"],
+Cell[4241, 119, 514, 13, 48, "Input",ExpressionUUID->"638afcfd-4913-4546-8560-1111543c3294"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4792, 137, 168, 3, 67, "Section",ExpressionUUID->"690f5071-d44d-480f-9966-80083cd9689f"],
+Cell[4963, 142, 1572, 28, 304, "Input",ExpressionUUID->"dbf61a03-71ca-4afb-9746-1a69bb39a881"],
+Cell[6538, 172, 1600, 35, 157, "Input",ExpressionUUID->"470ef42e-ae8d-4931-9867-60a8c4a2f50d"],
+Cell[8141, 209, 770, 16, 94, "Input",ExpressionUUID->"221a1167-2031-40da-85fb-867448e5a085"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8948, 230, 230, 4, 67, "Section",ExpressionUUID->"8bc71bb7-7a66-4f87-b03c-eb43219f8471"],
+Cell[9181, 236, 2629, 45, 472, "Input",ExpressionUUID->"9834b6b4-04b0-4647-873a-6483d2951de5"],
+Cell[11813, 283, 3420, 71, 346, "Input",ExpressionUUID->"9f5e21db-3b0b-4226-a4cb-da83076188f9"],
+Cell[15236, 356, 841, 17, 94, "Input",ExpressionUUID->"f75a4065-742f-4b9f-a00b-57d977d11730"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
