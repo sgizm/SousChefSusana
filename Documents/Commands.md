@@ -57,6 +57,7 @@
 - I am in the mood for a snack.
 - I wanna eat sushi.
 - Show easy sushi recipes.
+- Show me good recipe / option for Thanksgiving dinner.
 
 
 #### By constraints
@@ -97,6 +98,8 @@
 - What is the ingredient breakdown?
 - Which one has the least calories?
 - Why do you suggest this recipe?
+- Can I make pizza at home?
+- Do I need barbeque to grill steaks? 
 
 #### Planning
 
@@ -147,6 +150,7 @@
 - What's the trick when cooking asparagus?
 - How to ferment onions?
 - How long should I bake the cake in the oven?
+- What do I need to make pizza at home?
 -----
 
 ## Introspection / statistics
