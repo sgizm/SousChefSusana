@@ -1,0 +1,172 @@
+---
+title: "SCS recommender experiments"
+author: Anton Antonov
+date: 2021-03-22
+output: html_notebook
+---
+
+```{r setup}
+library(Matrix)
+library(tidyverse)
+library(RandomDataFrameGenerator)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(ParetoPrincipleAdherence)
+```
+
+# Introduction
+
+# Generated data
+
+```{r}
+set.seed(3353)
+numberOfUsers <- 3
+numberOfDays <- 90
+dfRand <- 
+  RandomDataFrame( 
+    nrow = 200,
+    columnNames = c("ID", "UserID", "PeriodMeal", "Ingredient", "Cuisine", "TimeStamp"),
+    generators = 
+      list(
+        function(n) as.character(round(runif(n = n, min = 10^6, max = 16^8 ))),
+        RandomString(numberOfUsers, charClasses = "[a-z]"),
+        c("lunch", "dinner", "breakfast"),
+        function(n) purrr::map_chr(1:n, function(x) paste( sample( x = c("protein", "carb", "low calorie", "fat", "saturated fat"), prob = c(1, 2, 0.5, 1, 0.4), size = 3, replace = F), collapse = "; " )),
+        c("Chinese", "Finnish", "Turkish", "Greek", "Scandinavian"),
+        function(n) as.character(sort(RandomDate(size = n, min = Sys.time(), max = Sys.time() + numberOfDays*24*3600)))
+      )
+    )
+```
+
+```{r}
+head(dfRand)
+```
+
+```{r}
+summary(as.data.frame(unclass(dfRand), stringsAsFactors = T))
+```
+
+```{r}
+xtabs(~ UserID + PeriodMeal, dfRand )
+```
+
+```{r}
+xtabs(~ Cuisine + PeriodMeal, dfRand )
+```
+
+# Transform data
+
+```{r}
+dfRandLongForm <- 
+  tidyr::pivot_longer( data = dfRand, cols = setdiff( names(dfRand), "ID"), names_to = "Variable", values_to = "Value")
+dim(dfRandLongForm)
+```
+
+```{r}
+dfRandLongFormPart <- 
+  dfRandLongForm %>% 
+  dplyr::filter( Variable == "Ingredient")
+dfRandLongFormPart <- 
+  purrr::map_df( split(dfRandLongFormPart, 1:nrow(dfRandLongFormPart) ), function(dfX) {
+    data.frame( ID = dfX$ID, Variable = dfX$Variable, Value = trimws(strsplit(dfX$Value, ";")[[1]]) )
+  })
+summary(as.data.frame(unclass(dfRandLongForm), stringsAsFactors = T))
+```
+
+```{r}
+dfRandLongForm2 <- 
+  rbind(
+    dfRandLongForm %>% dplyr::filter( Variable != "Ingredient"),
+    dfRandLongFormPart
+  ) %>% 
+  dplyr::mutate( Weight = 1, Value = tolower(Value) )
+dim(dfRandLongForm2)
+```
+
+# Make recommender
+
+Make meal-centric, frequencies recommender:
+
+```{r}
+smrSCSFreq <- SMRCreateFromLongForm( data = dfRandLongForm2, itemColumnName = "ID", tagTypeColumnName = "Variable", valueColumnName = "Value", weightColumnName = "Weight", addTagTypesToColumnNamesQ = T )
+smrSCSFreq %>% SMRMonTakeTagTypeRanges
+```
+
+```{r}
+summary(smrSCSFreq$M@x)
+```
+
+(Heuristically) tuned recommender:
+
+```{r}
+smrSCS <- 
+  smrSCSFreq %>% 
+  SMRMonApplyTermWeightFunctions("IDF", "None", "Cosine")
+```
+
+```{r}
+smrSCS %>% SMRMonTakeTagTypeRanges
+```
+
+```{r}
+summary(smrSCS$M@x)
+```
+
+# Example recommendations
+
+```{r}
+smrSCS %>% 
+  SMRMonRecommendByProfile(c("PeriodMeal:lunch", "Cuisine:chinese")) %>% 
+  SMRMonJoinAcross( data = dfRand, by = "ID" ) %>% 
+  SMRMonTakeValue
+```
+
+# Classifcation 
+
+```{r}
+smrSCSFreq %>% 
+  #SMRMonApplyTermWeightFunctions( "None", "None", "Cosine" ) %>% 
+  SMRMonClassifyByProfile(tagType = "UserID", profile = c("Cuisine:turkish"=1, "Cuisine:chinese"=0.5) ) %>% 
+  SMRMonTakeValue
+```
+Proof for the classification results:
+
+```{r}
+smat <- xtabs( ~ UserID + Cuisine, dfRand, sparse = T )
+as.matrix(smat)
+```
+```{r}
+SMRApplyTermWeightFunctions( docTermMat = smat, normalizerFunction = "Cosine" )
+```
+
+
+# User profile
+
+Get all meals for a user:
+
+```{r}
+dfHist <- smrSCS %>% SMRMonRecommendByProfile( profile = c("UserID:tojp"), nrecs = NULL ) %>% SMRMonTakeValue
+dfHist
+```
+
+```{r}
+lsProf <- 
+  smrSCS %>% 
+  SMRMonProfile( history = dfHist$ID ) %>% 
+  SMRMonTakeValue
+lsProf
+```
+
+# User-centric recommender
+
+From a Meal-centric recommender to a User-centric recommender.
+
+```{r}
+smrSCSMeta <- SMRToMetadataRecommender( smr = smrSCSFreq, tagTypeTo = "UserID" )
+```
+
+```{r}
+SMRSubMatrix(smrSCSMeta, "PeriodMeal")
+```
+
