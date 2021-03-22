@@ -54,7 +54,9 @@
 - Tell me non-Asian recipe.
 - Tell me some interesting Thai recipe.
 - I want to eat a French lunch.
-- I am in the mood for a snack
+- I am in the mood for a snack.
+- I wanna eat sushi.
+- Show easy sushi recipes.
 
 
 #### By constraints
@@ -143,7 +145,8 @@
 - What's the easiest soup to make?
 - What's the quickest soup to make?
 - What's the trick when cooking asparagus?
-
+- How to ferment onions?
+- How long should I bake the cake in the oven?
 -----
 
 ## Introspection / statistics
