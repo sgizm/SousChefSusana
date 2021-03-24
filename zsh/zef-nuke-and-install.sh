@@ -12,6 +12,9 @@ raku -I. bin/zef install .
 
 cd -
 
+## Install prove6
+zef install App::Prove6
+
 ## Install Raku packages
 zef install https://github.com/antononcube/Raku-DSL-Shared.git --force-install
 zef install https://github.com/antononcube/Raku-DSL-Entity-English-Foods.git --force-install
