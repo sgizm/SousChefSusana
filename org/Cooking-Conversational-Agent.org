@@ -4,9 +4,9 @@
 #+TODO: TODO ONGOING MAYBE Anton Sezin | DONE CANCELED 
 #+OPTIONS: toc:1 num:0
 
-* Why? [0%] [0/3]
-** Sezin Mission statement
-** Sezin Motivation
+* Why? [66%] [2/3]
+** DONE Mission statement
+** DONE Motivation
 ** Sezin Frustrations with other similar solution
 * TODO Defining the problem
 * TODO Preliminary tasks [0%] [0/2]
@@ -15,11 +15,46 @@
 - Descriptive
 - In what language?
 ** DONE GitHub repository?
-* MVP [%] [/]
+* MVP [33%] [1/3]
 ** TODO Features
-** TODO Design
+- Single command parsing and interpretation.
+  - No dialogs
+- Recommendations queries
+- Introspection queries
+- Data analysis queries
+- Recommenders:
+  - Recipe recommender
+  - User recommender
+  - Foods/ingredients recommender
+- Hook-up with Mathematica, R, or some other system to show interactivity.
+** DONE Design
 ** TODO Implementation
-*** Mathematica
+*** DONE Raku grammars package [66%] [4/6]
+- ~DSL::English::FoodPreparationWorkflows~
+- [X] Recommendations (simple)
+- [X] Recommendations by profile
+- [ ] Collaborative filtering recommendations
+- [ ] Data analysis queries
+- [X] Introspection query
+- [X] Ingredient query
+- [ ] Unit tests
+*** DONE Raku comprehensive parser inclusion
+- [X] Include ~DSL::English::FoodPreparationWorkflows~ in the package ~DSL::Shared::Utilities::ComprehensiveTranslation~
+*** DONE Mathematica
+- [X] Hook-up with ~ToFoodPreparationWorkflowCode~
+- [X] Experiments
+*** TODO R
+- [ ] Hook-up with ~ToFoodPreparationWorkflowCode~
+- [ ] Experiments
+** TODO Recommenders
+*** TODO Mathematica [33%] [1/3]
+- [ ] Foods/ingredients recommender
+- [X] Mock users recommender
+- [ ] Recipe recommender
+*** TODO R [66%] [2/3]
+- [X] Foods/ingredients recommender
+- [ ] Recipe recommender
+- [X] Mock users recommender
 * Software architecture
 ** General strategy
 - Separation of the business logic from the implementation.
@@ -51,8 +86,8 @@
 ** [[https://www.miamiwids.com][WiDS Miami 2021]]
 - Online conference.
 - [[https://www.papercall.io/widsmiami2021][Call for papers]]
-** Abstract
-** Paper features
+*** Abstract
+*** Paper features
 - Goals
   - Is this an advertisement of the project?
     - Meaning, collaboration invitation.
@@ -106,8 +141,20 @@
 - Design
   - Personal use
   - Scaling
-** Analogies and relations 
+*** Analogies and relations 
 - This is an app mostly for women. (Say/)
   - What would be the corresponding app for men?
     - Fishing suggestion app.
+*** TODO Presentation recording [0%] [0/4]
+DEADLINE: <2021-04-02 Fri>
+**** Sezin Slide deck
+- [ ] 2-4 slides
+- [ ] R
+- [ ] Mind-map
+- [ ] Mathematica notebook
+- [ ] R notebook
+- [ ] R shiny interface
+**** Anton Supporting notebooks WL
+**** Anton Supporting code R
+**** Anton Dashboard in R
 
