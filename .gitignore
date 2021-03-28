@@ -40,3 +40,6 @@ vignettes/*.pdf
 inst/doc
 doc
 Meta
+
+*.nb.html
+.gitignore
