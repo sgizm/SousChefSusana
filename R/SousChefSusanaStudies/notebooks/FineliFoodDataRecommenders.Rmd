@@ -1,0 +1,149 @@
+---
+title: "Fineli Food Data Recommenders"
+author: Anton Antonov
+date: 2021-03-28
+output: html_notebook
+---
+
+```{r}
+library(d3heatmap)
+library(magrittr)
+library(tidyverse)
+library(Matrix)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(OutlierIdentifiers)
+library(SparseMatrixRecommenderInterfacesNoDT)
+library(ParetoPrincipleAdherence)
+
+library(FineliFoodData)
+```
+
+
+# Introduction
+
+There are three recommenders that can be made with the Fineli Food Data:
+
+- [X] Overall recommender
+
+- [ ] Recipes recommender
+
+- [ ] "Simple" foods recommender
+
+We first make the "Overall recommender" and then enhance it with foodID-to-foodID to matrix that contains 
+the relationships between food recipes and food ingredients.
+
+# Overall recommender
+
+```{r}
+head(lsFineliFoodDataTables$food)
+```
+
+```{r}
+smrFineliFoodFreq <- 
+  SMRCreate( 
+    dataRows = lsFineliFoodDataTables$food, 
+    tagTypes = names(lsFineliFoodDataTables$food)[-c(1,2)],
+    itemColumnName = "FOODID", 
+    addTagTypesToColumnNamesQ = TRUE )
+smrFineliFoodFreq %>% SMRMonTakeTagTypeRanges
+```
+
+
+```{r}
+smrFineliFood <- 
+  smrFineliFoodFreq %>% 
+  SMRMonApplyTermWeightFunctions( "IDF", "None", "Cosine" )
+```
+
+# Food names words topics
+
+```{r}
+set.seed(665)
+lsaFoodNames <- 
+  LSAMonUnit( aFoodIDToName ) %>% 
+  LSAMonMakeDocumentTermMatrix(stemWordsQ = FALSE, stopWords = stopwords::stopwords() ) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
+```
+
+```{r rows.print=20}
+lsaFoodNames <- 
+  lsaFoodNames %>% 
+  LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
+```
+
+# Extend core food recommender
+
+```{r}
+matWords <- lsaFoodNames %>% LSAMonTakeWeightedDocumentTermMatrix
+matTopics <- lsaFoodNames %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+```
+
+```{r}
+smrFineliFood <- 
+  smrFineliFood %>% 
+  SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
+  SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
+```
+
+```{r}
+smrFineliFood %>% SMRMonTakeTagTypeRanges
+```
+
+# Re-map recomemnder items
+
+
+```{r}
+aFoodIDToName <- MakeDictionary( "foodname", lang = "EN", columnNamePrefixesQ = F)
+```
+
+```{r}
+rownames(smrFineliFoodFreq$M) <- aFoodIDToName[rownames(smrFineliFoodFreq$M) ]
+rownames(smrFineliFoodFreq$M01) <- aFoodIDToName[rownames(smrFineliFoodFreq$M01) ]
+```
+
+```{r}
+rownames(smrFineliFood$M) <- aFoodIDToName[rownames(smrFineliFood$M) ]
+rownames(smrFineliFood$M01) <- aFoodIDToName[rownames(smrFineliFood$M01) ]
+```
+
+# Example recommendations
+
+```{r}
+sample(aFoodIDToName, 3)
+```
+
+```{r, rows.print = 20}
+smrFineliFood %>% 
+  SMRMonRecommend( history = "BLACKCURRANT JUICE, UNSWEETENED, DILUTED, HOME-MADE", nrecs = 20) %>% 
+  SMRMonTakeValue
+```
+
+
+```{r}
+grep("Word:m.*ss", colnames(smrFineliFood$M), value = T)
+```
+
+```{r, rows.print = 20}
+query <- "moussaka with potatoes"
+matProf <- lsaFoodNames %>% LSAMonRepresentByTerms( query = query ) %>% LSAMonTakeValue
+lsProf <- colnames(matProf)[ colSums(matProf) > 0];
+lsProf <- paste0( "Word:", lsProf)
+lsProf
+```
+
+```{r, rows.print = 20}
+smrFineliFood %>% 
+  SMRMonRecommendByProfile( profile = lsProf, nrecs = 20) %>% 
+  SMRMonTakeValue
+```
+
+```{r, rows.print = 20}
+smrFineliFood %>% 
+  SMRMonRecommend( history = "MOUSSAKA, PORK-BEEF MINCE, POTATOES, LOW-FAT MILK", nrecs = 20) %>% 
+  SMRMonTakeValue
+```
+

@@ -1,0 +1,166 @@
+---
+title: "Fineli data study"
+author: Anton Antonov
+date: 2021-03-27
+output: html_notebook
+params:
+  fineliDataDirName: "~/Datasets/Fineli/Fineli_Rel20"
+  fineliLanguage: "EN"
+---
+
+```{r setup}
+library(d3heatmap)
+library(magrittr)
+library(tidyverse)
+library(Matrix)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+library(OutlierIdentifiers)
+library(SparseMatrixRecommenderInterfacesNoDT)
+library(ParetoPrincipleAdherence)
+
+library(FineliFoodData)
+```
+
+# Introduction
+
+In this notebook we study the transitive relationships between the "Finnish Food Dataset" [Fineli]( https://fineli.fi).
+
+The Fineli data has a fairly complete description of its structure and organization. See the documents:
+
+- "Fineli®, food composition data files"
+
+- "Nutrient factors included in Fineli packages"
+
+The data is three different languages: English, Finnish, Swedish.
+
+**Remark:** This notebook is parameterized with the focus language. Here is the correspondence between language and parameter value:
+ English (EN), Finnish (FI), Swedish (SV).
+
+# Analyze relationships
+
+```{r}
+lsTableColnames <- purrr::map( lsFineliFoodDataTables, function(x) colnames(x) )
+dfPairs <- expand.grid( names(lsTableColnames), names(lsTableColnames) )
+dfPairs <- dfPairs[dfPairs[[1]] != dfPairs[[2]], ]
+dim(dfPairs)
+```
+
+
+```{r}
+head(dfPairs)
+```
+
+
+```{r}
+dfCommonColnamesLongForm <- 
+  purrr::map_df( split(dfPairs, 1:nrow(dfPairs)), function(dfX) {
+    cbind( dfX,
+           NCommon = length( intersect(lsTableColnames[[ dfX[1,1] ]], lsTableColnames[[ dfX[1,2] ]] ) ),
+           Common = paste( intersect(lsTableColnames[[ dfX[1,1] ]], lsTableColnames[[ dfX[1,2] ]]), collapse = "; "  ) 
+    )
+  })
+```
+
+
+```{r}
+dfCommonColnamesLongForm %>% dplyr::sample_n(10)
+```
+
+```{r}
+xtabs( NCommon ~ Var1 + Var2, dfCommonColnamesLongForm, sparse = F ) 
+```
+
+```{r, rows.print=20}
+dfCommonColnames <- dfCommonColnamesLongForm %>% pivot_wider( id_cols = "Var1", names_from = "Var2", values_from = "Common", values_fn = as.character)
+View(dfCommonColnames)
+```
+
+# Connections investigations
+
+## Connection between recipes and foods
+
+Here is the summary of the table "food":
+
+```{r}
+Summary(lsFineliFoodDataTables$food)
+```
+We can see that food names have 1-to-1 correspondence with food IDs. (Hence can be used as items/rownames in the SMR object.)
+
+Here is the summary of the table "contribfood":
+
+```{r}
+Summary(lsFineliFoodDataTables$contribfood)
+```
+
+The recipes table "contribfood" is in long form. The ID column is "FOODID", the Variable column is "CONFDID".
+
+With this summary we see that most of recipes are "non-ingredient" foods ("IGCLASSP:NONINGR") :
+
+```{r}
+Summary(lsFineliFoodDataTables$food %>% 
+          dplyr::mutate( FOODNAME = NULL ) %>% 
+          dplyr::right_join( lsFineliFoodDataTables$contribfood %>% dplyr::select( FOODID ), by = c("FOODID"="FOODID") ) %>% 
+          dplyr::inner_join( lsFineliFoodDataTables$foodname_EN, by = "FOODID" ) %>% 
+          dplyr::mutate( LANG = NULL ) ) 
+```
+Let us compare with the summary of the corresponding anti-join:
+
+```{r}
+Summary(lsFineliFoodDataTables$food %>% 
+          dplyr::mutate( FOODNAME = NULL ) %>% 
+          dplyr::right_join( lsFineliFoodDataTables$contribfood %>% dplyr::select( FOODID ), by = c("FOODID"="FOODID") ) %>% 
+          dplyr::inner_join( lsFineliFoodDataTables$foodname_EN, by = "FOODID" ) %>% 
+          dplyr::mutate( LANG = NULL ) ) 
+```
+
+
+
+```{r}
+lsFineliFoodDataTables$food %>% 
+  dplyr::mutate( FOODNAME = NULL ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$foodname_EN, by = "FOODID" ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$fuclass_EN, by = c( "FUCLASS" = "THSCODE" ) ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$igclass_EN, by = c( "IGCLASS" = "THSCODE" ) ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$fuclass_EN, by = c( "FUCLASSP" = "THSCODE" ) ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$igclass_EN, by = c( "IGCLASSP" = "THSCODE" ) ) %>% 
+  dplyr::select( !tidyselect::starts_with("LANG")) %>% 
+  dplyr::select( !tidyselect::starts_with("DESC")) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$process_EN, by = c( "PROCESS" = "THSCODE" ) )
+```
+
+```{r}
+lsFineliFoodDataTables$contribfood %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$foodname_EN %>% dplyr::mutate( LANG = NULL, INGREDIENTFOODNAME = FOODNAME, FOODNAME = NULL ), 
+                     by = c("CONFDID"="FOODID") ) %>% 
+  dplyr::inner_join( lsFineliFoodDataTables$foodname_EN %>% dplyr::mutate( LANG = NULL ), 
+                     by = c("FOODID"="FOODID") )
+```
+# Other studies
+
+```{r}
+lsFineliFoodDataTables$foodname_EN
+```
+
+```{r}
+dfCountryAdjectiveToName <- read.csv("https://raw.githubusercontent.com/antononcube/Raku-DSL-Entity-English-Geographics/main/resources/CountryAdjectiveToName.csv", header = FALSE)
+names(dfCountryAdjectiveToName) <- c("Adjective", "Name")
+dim(dfCountryAdjectiveToName)
+```
+
+```{r}
+lsHasCountrySpec <- 
+  purrr::map_lgl( iconv(lsFineliFoodDataTables$foodname_EN$FOODNAME), function(x) {
+    length(intersect( tolower(strsplit(x, " ")[[1]]), tolower(dfCountryAdjectiveToName$Adjective))) > 0 ||
+          length(intersect( tolower(strsplit(x, " ")[[1]]), tolower(dfCountryAdjectiveToName$Name))) > 0
+  })
+mean(lsHasCountrySpec)
+```
+
+
+```{r, rows.print = 30}
+cbind( lsFineliFoodDataTables$foodname_EN, HasCountrySpec = lsHasCountrySpec ) %>% 
+  dplyr::filter( HasCountrySpec )
+```
+
