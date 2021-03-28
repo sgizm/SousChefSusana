@@ -38,3 +38,9 @@ colnames(food_composition_data$USDA)
 food_composition_data$USDA
 ```
 
+# Export
+
+```{r, eval=FALSE}
+write.csv( x = food_composition_data$USDA, file = "../output/dfFoodCompositionData")
+```
+
