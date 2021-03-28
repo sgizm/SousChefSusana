@@ -62,7 +62,7 @@ smrFineliFood <-
 ```{r}
 set.seed(665)
 lsaFoodNames <- 
-  LSAMonUnit( aFoodIDToName ) %>% 
+  LSAMonUnit(  MakeDictionary( "foodname", lang = "EN") ) %>% 
   LSAMonMakeDocumentTermMatrix(stemWordsQ = FALSE, stopWords = stopwords::stopwords() ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
   LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
