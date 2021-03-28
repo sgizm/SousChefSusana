@@ -16,7 +16,7 @@ library(LSAMon)
 library(OutlierIdentifiers)
 library(SparseMatrixRecommenderInterfacesNoDT)
 library(ParetoPrincipleAdherence)
-
+library(FineliFoodData)
 library(NutrienTrackeR)
 data(food_composition_data)
 ```
