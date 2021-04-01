@@ -3,6 +3,11 @@ title: "Fineli Food Data Recommenders"
 author: Anton Antonov
 date: 2021-03-28
 output: html_notebook
+params:
+  saveDirName: "../output/"
+  exportDirName: "../smr-export/"
+  saveObjectsQ: TRUE
+  exportSMRQ: TRUE
 ---
 
 ```{r}
@@ -34,35 +39,39 @@ There are three recommenders that can be made with the Fineli Food Data:
 We first make the "Overall recommender" and then enhance it with foodID-to-foodID to matrix that contains 
 the relationships between food recipes and food ingredients.
 
+# Data preparation
+
+```{r}
+dfFineliFoodDataOrig <- lsFineliFoodDataTables$food
+head(dfFineliFoodDataOrig)
+```
+
+
 # Overall recommender
 
 ```{r}
-head(lsFineliFoodDataTables$food)
-```
-
-```{r}
-smrFineliFoodFreq <- 
+smrFineliFoodsFreq <- 
   SMRCreate( 
     dataRows = lsFineliFoodDataTables$food, 
     tagTypes = names(lsFineliFoodDataTables$food)[-c(1,2)],
     itemColumnName = "FOODID", 
     addTagTypesToColumnNamesQ = TRUE )
-smrFineliFoodFreq %>% SMRMonTakeTagTypeRanges
+smrFineliFoodsFreq %>% SMRMonTakeTagTypeRanges
 ```
 
 
 ```{r}
-smrFineliFood <- 
-  smrFineliFoodFreq %>% 
+smrFineliFoods <- 
+  smrFineliFoodsFreq %>% 
   SMRMonApplyTermWeightFunctions( "IDF", "None", "Cosine" )
 ```
 
-# Food names words topics
+# Food names (single-)words topics
 
 ```{r}
 set.seed(665)
 lsaFoodNames <- 
-  LSAMonUnit(  MakeDictionary( "foodname", lang = "EN") ) %>% 
+  LSAMonUnit( iconv(MakeDictionary( "foodname", lang = "EN")) ) %>% 
   LSAMonMakeDocumentTermMatrix(stemWordsQ = FALSE, stopWords = stopwords::stopwords() ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
   LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
@@ -74,40 +83,121 @@ lsaFoodNames <-
   LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
 ```
 
-# Extend core food recommender
+
+# Words and phrases topics
 
 ```{r}
-matWords <- lsaFoodNames %>% LSAMonTakeWeightedDocumentTermMatrix
-matTopics <- lsaFoodNames %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+lsaFoodPhrases <- 
+  LSAMonUnit( iconv(MakeDictionary( "foodname", lang = "EN")) ) %>% 
+  LSAMonMakeDocumentTermMatrix(stemWordsQ = FALSE, stopWords = NULL, splitPattern = ",\\s*" )
 ```
 
 ```{r}
-smrFineliFood <- 
-  smrFineliFood %>% 
+sample(colnames(lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix),100)
+```
+
+```{r}
+smat1 <- lsaFoodNames %>% LSAMonTakeDocumentTermMatrix
+smat2 <- lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix
+smat2 <- smat2[, setdiff(colnames(smat2), colnames(smat1))]
+lsaFineliFoodWordsAndPhrases <- 
+  LSAMonUnit() %>% 
+  LSAMonSetDocumentTermMatrix( documentTermMatrix = cbind( smat1, smat2 ) ) %>% 
+  LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
+  LSAMonExtractTopics( numberOfTopics = 40, minNumberOfDocumentsPerTerm = 3, method = "NNMF", maxSteps = 15)
+```
+
+```{r rows.print=20}
+lsaFineliFoodWordsAndPhrases <- 
+  lsaFineliFoodWordsAndPhrases %>% 
+  LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
+```
+```{r, rows.print = 20, message=FALSE}
+dfWordsNNs <- 
+  lsaFineliFoodWordsAndPhrases %>% 
+  LSAMonExtractStatisticalThesaurus( 
+    searchWords = ( c("alaska", "game", "chicken", "salmon", "yogurt", "milk", "coffee", "pizza chain", "french", "vegetable soup")), 
+    numberOfNearestNeighbors = 12, 
+    fixed = T) %>% 
+  LSAMonTakeValue %>% 
+  dplyr::bind_rows()
+purrr::map_df( split(dfWordsNNs, dfWordsNNs$SearchTerm), function(x) data.frame( SearchTerm = x$SearchTerm[[1]], Thesaurus = paste(x$Word.Word, collapse = ", ") ) )
+```
+
+
+# Extend core food recommender
+
+```{r}
+matWords <- lsaFoodWordsAndPhrases %>% LSAMonTakeWeightedDocumentTermMatrix
+matTopics <- lsaFoodWordsAndPhrases %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+```
+
+```{r}
+smrFineliFoods <- 
+  smrFineliFoods %>% 
   SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
   SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
   SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
 ```
 
+# Make interpretable data
+
 ```{r}
-smrFineliFood %>% SMRMonTakeTagTypeRanges
+smrFineliFoods %>% SMRMonTakeTagTypeRanges
+```
+
+```{r}
+colnames(SMRSubMatrix(smrFineliFoods, "IGCLASS"))
+```
+
+```{r}
+lsFineliFoodDataTables$foodname_EN
+```
+
+
+```{r}
+aFoodName <- MakeDictionary("foodname", nameFrom = "FOODID", nameTo = "FOODNAME", lang = "EN")
+aProcess <- MakeDictionary("process", nameFrom = "THSCODE", nameTo = "DESCRIPT", lang = "EN")
+aIgClass <- MakeDictionary("igclass", nameFrom = "THSCODE", nameTo = "DESCRIPT", lang = "EN")
+aFuClass <- MakeDictionary("fuclass", nameFrom = "THSCODE", nameTo = "DESCRIPT", lang = "EN")
+```
+
+```{r}
+head(dfFineliFoodDataOrig)
+```
+
+```{r}
+dfFineliFoodData <- 
+  dfFineliFoodDataOrig %>% 
+  dplyr::mutate( FOODID = as.character(FOODID) ) %>% 
+  dplyr::mutate( FOODNAME = aFoodName[FOODID]  ) %>% 
+  dplyr::mutate( PROCESS  = aProcess[PROCESS]  ) %>% 
+  dplyr::mutate( FUCLASS  = aFuClass[FUCLASS]  ) %>% 
+  dplyr::mutate( FUCLASSP = aFuClass[FUCLASSP] ) %>% 
+  dplyr::mutate( IGCLASS  = aIgClass[IGCLASS]  ) %>% 
+  dplyr::mutate( IGCLASSP = aIgClass[IGCLASSP] )
+dfFineliFoodData
+```
+
+```{r}
+Summary(dfFineliFoodData)
 ```
 
 # Re-map recomemnder items
 
-
 ```{r}
 aFoodIDToName <- MakeDictionary( "foodname", lang = "EN", columnNamePrefixesQ = F)
+aFoodNameToID <- setNames( names(aFoodIDToName), aFoodIDToName )
 ```
 
-```{r}
-rownames(smrFineliFoodFreq$M) <- aFoodIDToName[rownames(smrFineliFoodFreq$M) ]
-rownames(smrFineliFoodFreq$M01) <- aFoodIDToName[rownames(smrFineliFoodFreq$M01) ]
+```{r, eval=F}
+rownames(smrFineliFoodsFreq$M) <- aFoodIDToName[rownames(smrFineliFoodsFreq$M) ]
+rownames(smrFineliFoodsFreq$M01) <- aFoodIDToName[rownames(smrFineliFoodsFreq$M01) ]
 ```
 
-```{r}
-rownames(smrFineliFood$M) <- aFoodIDToName[rownames(smrFineliFood$M) ]
-rownames(smrFineliFood$M01) <- aFoodIDToName[rownames(smrFineliFood$M01) ]
+```{r, eval=F}
+rownames(smrFineliFoods$M) <- aFoodIDToName[rownames(smrFineliFoods$M) ]
+rownames(smrFineliFoods$M01) <- aFoodIDToName[rownames(smrFineliFoods$M01) ]
 ```
 
 # Example recommendations
@@ -116,15 +206,19 @@ rownames(smrFineliFood$M01) <- aFoodIDToName[rownames(smrFineliFood$M01) ]
 sample(aFoodIDToName, 3)
 ```
 
+
+
+
 ```{r, rows.print = 20}
-smrFineliFood %>% 
-  SMRMonRecommend( history = "BLACKCURRANT JUICE, UNSWEETENED, DILUTED, HOME-MADE", nrecs = 20) %>% 
+smrFineliFoods %>% 
+  SMRMonRecommend( history = aFoodNameToID[ "BLACKCURRANT JUICE, UNSWEETENED, DILUTED, HOME-MADE"], nrecs = 20) %>% 
+  SMRMonJoinAcross( data = dfFineliFoodData, by = "FOODID") %>% 
   SMRMonTakeValue
 ```
 
 
 ```{r}
-grep("Word:m.*ss", colnames(smrFineliFood$M), value = T)
+grep("Word:m.*ss", colnames(smrFineliFoods$M), value = T)
 ```
 
 ```{r, rows.print = 20}
@@ -136,14 +230,38 @@ lsProf
 ```
 
 ```{r, rows.print = 20}
-smrFineliFood %>% 
+smrFineliFoods %>% 
   SMRMonRecommendByProfile( profile = lsProf, nrecs = 20) %>% 
+  SMRMonJoinAcross( dfFineliFoodData ) %>% 
   SMRMonTakeValue
+```
+
+```{r}
+Summary(dfFineliFoodDataOrig, maxsum = 20)
 ```
 
 ```{r, rows.print = 20}
-smrFineliFood %>% 
-  SMRMonRecommend( history = "MOUSSAKA, PORK-BEEF MINCE, POTATOES, LOW-FAT MILK", nrecs = 20) %>% 
+smrFineliFoods %>% 
+  SMRMonApplyTagTypeWeights( weights = c("Word" = 0, "Topic" = 0), default = 1) %>% 
+  SMRMonRecommend( history = aFoodNameToID["MOUSSAKA, PORK-BEEF MINCE, POTATOES, LOW-FAT MILK"], nrecs = 20) %>% 
+  SMRMonJoinAcross( dfFineliFoodDataOrig ) %>% 
   SMRMonTakeValue
 ```
 
+# Save
+
+```{r}
+if( params$saveObjectsQ ) {
+  save( smrFineliFoods,               file = file.path( params$saveDirName, "smrFineliFoods.RData"))
+  save( lsaFineliFoodWordsAndPhrases, file = file.path( params$saveDirName, "lsaFineliFoodWordsAndPhrases.RData"))
+  save( dfFineliFoodData,             file = file.path( params$saveDirName, "dfFineliFoodData.RData"))
+}
+```
+
+# Export
+
+```{r}
+if( params$exportSMRQ ) {
+  SMRExportToDirectory( smr = smrFineliFoods,  directoryPath = params$exportDirName, dataNameInfix = "FineliFoods" )
+}
+```

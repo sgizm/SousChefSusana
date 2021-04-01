@@ -3,6 +3,11 @@ title: "Nutrition data recommenders"
 author: Anton Antonov
 date: 2021-03-05
 output: html_notebook
+params:
+  saveDirName: "../output/"
+  exportDirName: "../smr-export/"
+  saveObjectsQ: TRUE
+  exportSMRQ: TRUE
 ---
 
 ```{r setup}
@@ -108,7 +113,7 @@ sample(colnames(lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix),100)
 smat1 <- lsaFoodNames %>% LSAMonTakeDocumentTermMatrix
 smat2 <- lsaFoodPhrases %>% LSAMonTakeDocumentTermMatrix
 smat2 <- smat2[, setdiff(colnames(smat2), colnames(smat1))]
-lsaFoodWordsAndPhrases <- 
+lsaUSDAFoodWordsAndPhrases <- 
   LSAMonUnit() %>% 
   LSAMonSetDocumentTermMatrix( documentTermMatrix = cbind( smat1, smat2 ) ) %>% 
   LSAMonApplyTermWeightFunctions( "IDF", "None", "Cosine" ) %>% 
@@ -116,13 +121,13 @@ lsaFoodWordsAndPhrases <-
 ```
 
 ```{r rows.print=20}
-lsaFoodWordsAndPhrases <- 
-  lsaFoodWordsAndPhrases %>% 
+lsaUSDAFoodWordsAndPhrases <- 
+  lsaUSDAFoodWordsAndPhrases %>% 
   LSAMonEchoTopicsTable(numberOfTerms = 20, wideFormQ = T)
 ```
 ```{r, rows.print = 20, message=FALSE}
 dfWordsNNs <- 
-  lsaFoodWordsAndPhrases %>% 
+  lsaUSDAFoodWordsAndPhrases %>% 
   LSAMonExtractStatisticalThesaurus( 
     searchWords = ( c("alaska", "game", "chicken", "salmon", "yogurt", "milk", "coffee", "pizza chain", "french")), 
     numberOfNearestNeighbors = 12, 
@@ -135,12 +140,12 @@ purrr::map_df( split(dfWordsNNs, dfWordsNNs$SearchTerm), function(x) data.frame(
 # Extend core food recommender
 
 ```{r}
-matWords <- lsaFoodNames %>% LSAMonTakeWeightedDocumentTermMatrix
-matTopics <- lsaFoodNames %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
+matWords <- lsaUSDAFoodWordsAndPhrases %>% LSAMonTakeWeightedDocumentTermMatrix
+matTopics <- lsaUSDAFoodWordsAndPhrases %>% LSAMonNormalizeMatrixProduct(normalizeLeftQ = F) %>% LSAMonTakeW
 ```
 
 ```{r}
-smrFoodComposition <- 
+smrUSDAFoods <- 
   smrCoreFoodComposition %>% 
   SMRAnnexSubMatrix( newSubMat = matWords, newTagType = "Word", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
   SMRAnnexSubMatrix( newSubMat = matTopics, newTagType = "Topic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
@@ -151,7 +156,7 @@ smrFoodComposition <-
 # Recommendation examples
 
 ```{r, rows.print = 20}
-smrFoodComposition %>% 
+smrUSDAFoods %>% 
   SMRMonApplyTagTypeWeights( weights = c("Word"= 0, "Topic" = 0), default = 1) %>% 
   SMRMonRecommend( "Fast foods, biscuit, with egg, cheese, and bacon", nrecs = 20, removeHistoryQ = F) %>% 
   SMRMonJoinAcross( data = dfCompositionData ) %>% 
@@ -161,7 +166,7 @@ smrFoodComposition %>%
 ```{r}
 lsProf <- 
   lsaFoodNames %>% 
-  LSAMonRepresentByTerms(query = "egg and cheese") %>% 
+  LSAMonRepresentByTerms(query = "hamburger") %>% 
   LSAMonTakeValue
 lsProf <- colSums(lsProf)[colSums(lsProf)>0]
 names(lsProf) <-  paste0( "Word:", names(lsProf))
@@ -169,7 +174,7 @@ lsProf
 ```
 
 ```{r, rows.print = 20}
-smrFoodComposition %>% 
+smrUSDAFoods %>% 
   SMRMonRecommendByProfile( profile = names(lsProf), nrecs = 20) %>% 
   SMRMonJoinAcross( data = dfCompositionData ) %>% 
   SMRMonTakeValue
@@ -177,18 +182,18 @@ smrFoodComposition %>%
 
 
 ```{r}
-colnames(SMRSubMatrix(smrFoodComposition, "Water.g"))
+colnames(SMRSubMatrix(smrUSDAFoods, "Water.g"))
 ```
 
 ```{r, rows.print = 20}
-smrFoodComposition %>% 
+smrUSDAFoods %>% 
   SMRMonRecommendByProfile( "Water.g:30≤v<40", nrecs = 20) %>% 
   SMRMonJoinAcross( data = dfCompositionData ) %>% 
   SMRMonTakeValue
 ```
 
 ```{r}
-smat <- SMRSubMatrix(smrFoodComposition, "Topic")
+smat <- SMRSubMatrix(smrUSDAFoods, "Topic")
 d3heatmap(t(smat[sample(1:nrow(smat),400), ]), colors = "Blues")
 ```
 
@@ -226,23 +231,41 @@ dim(matLSAFoods)
 lsFocusInds <- grep( "burger king|mcd", rownames(matLSAFoods), ignore.case = T )
 d3heatmap(t(matLSAFoods[lsFocusInds, ]), Rowv = T, colors = "Blues")
 ```
-```{r}
-
-```
 
 
 ```{r}
-smrFoodComposition2 <- 
-  smrFoodComposition %>% 
+smrUSDAFoods2 <- 
+  smrUSDAFoods %>% 
   SMRAnnexSubMatrix( newSubMat = matLSAFoods, newTagType = "NumTopic", imposeSameRowNamesQ = T, addTagTypesToColumnNamesQ = T) %>% 
   SMRMonApplyTermWeightFunctions( "None", "None", "Cosine")
 ```
 
 
 ```{r, rows.print = 20}
-smrFoodComposition2 %>% 
-  SMRMonApplyTagTypeWeights( weights = c( "Topic" = 1, "NumTopic" = 0), default = 0) %>% 
+smrUSDAFoods2 %>% 
+  SMRMonApplyTagTypeWeights( weights = c( "Topic" = 1, "NumTopic" = 1), default = 0) %>% 
   SMRMonRecommend( "Milk, dry, whole, with added vitamin D", nrecs = 20, removeHistoryQ = F) %>% 
   SMRMonJoinAcross( data = dfCompositionData ) %>% 
   SMRMonTakeValue
+```
+
+
+# Save
+
+```{r}
+if( params$saveObjectsQ ) {
+  save( smrUSDAFoods,               file = file.path( params$saveDirName, "smrUSDAFoods.RData"))
+  save( lsaUSDAFoodWordsAndPhrases, file = file.path( params$saveDirName, "lsaUSDAFoodWordsAndPhrases.RData"))
+  
+  dfUSDAFoodData <- dfCompositionData
+  save( dfUSDAFoodData, file = file.path( params$saveDirName, "dfUSDAFoodData.RData"))
+}
+```
+
+# Export
+
+```{r}
+if( params$exportSMRQ ) {
+  SMRExportToDirectory( smr = smrUSDAFoods,  directoryPath = params$exportDirName, dataNameInfix = "USDAFoods" )
+}
 ```
