@@ -1,0 +1,289 @@
+---
+title: "Food recommender interface"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    source_code: embed
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(Matrix)
+library(shiny)
+library(flexdashboard)
+library(DT)
+library(rmarkdown)
+library(stopwords)
+library(SnowballC)
+library(purrr)
+library(tidyverse)
+
+library(OutlierIdentifiers)
+library(SparseMatrixRecommender)
+library(SMRMon)
+library(LSAMon)
+```
+
+```{r get-data, include=FALSE}
+
+  load( file = "smrFineliFoods.RData" )
+  load( file = "lsaFineliFoodWordsAndPhrases.RData" )
+  load( file = "dfFineliFoodData.RData" )
+  
+  load( file = "smrUSDAFoods.RData" )
+  load( file = "lsaUSDAFoodWordsAndPhrases.RData" )
+  load( file = "dfUSDAFoodData.RData" )
+  
+  lsRecommenders <- list( "Fineli" = smrFineliFoods,               "USDA" = smrUSDAFoods )
+  lsLSAObjects   <- list( "Fineli" = lsaFineliFoodWordsAndPhrases, "USDA" = lsaUSDAFoodWordsAndPhrases )
+  lsData         <- list( "Fineli" = dfFineliFoodData,             "USDA" = dfUSDAFoodData )
+  
+  lsRecommenders <- 
+    purrr::map( lsRecommenders, function(smr) {
+      smr %>% SMRMonApplyTermWeightFunctions( "IDF", "None", "Cosine" )
+    })
+```
+
+Parameters {.sidebar}
+=======================================================================
+
+```{r}
+selectInput( inputId = "recommender", 
+             label = "Type:", 
+             choices = setNames( names(lsRecommenders), paste( names(lsRecommenders), "recommender" ) ), 
+             selected = "Fineli")
+
+sliderInput( inputId = "numberOfRecs", label = "Number of recommendations:", min = 1, max = 300, value = 10, step = 1 )
+
+#sliderInput( inputId = "titleTagTypeWeight", label = "Title weight:", min = 0, max = 1, value = 1, step = 0.01 )
+
+sliderInput( inputId = "wordTagTypeWeight", label = "Word weight:", min = 0, max = 1, value = 1, step = 0.01 )
+
+sliderInput( inputId = "topicTagTypeWeight", label = "Topic weight:", min = 0, max = 1, value = 1, step = 0.01 )
+```
+
+```{r}
+smrObj <- 
+  reactive({
+    lsRecommenders[[ input$recommender ]]
+  })
+
+lsaObj <- 
+  reactive({
+    lsLSAObjects[[ input$recommender ]]
+  })
+
+dfData <- 
+  reactive({
+    lsData[[ input$recommender ]]
+  })
+```
+
+Main
+=======================================================================
+
+Row {data-height=800}
+-----------------------------------------------------------------------
+
+### Tags
+
+```{r}
+textAreaInput( 
+  inputId = "tagsText", 
+  label = "Tag text (metadata)", 
+  placeholder = "FUCLASS:MEATDISH, Word:chicken", 
+  width = "600px", cols = 300, rows = 8 )
+
+lsTagsProf <- 
+  reactive({
+    
+    if( nchar(input$tagsText) == 0) { 
+      NULL 
+    } else {
+      res <- trimws( strsplit(input$tagsText, split = ",")[[1]] )
+      res <- res[ nchar(res) > 0 ]
+      res <- res[ res %in% colnames(smrObj()$M) ] 
+    }
+  })
+```
+
+Known tags:
+
+```{r}
+renderText(paste(lsTagsProf(), collapse = ", "))
+```
+
+### Free text
+
+```{r}
+textAreaInput( 
+  inputId = "freeText", 
+  label = "Free text (description)", 
+  placeholder = "Hamburger with mayonnaise and tomatoes.", 
+  width = "600px", cols = 300, rows = 8 )
+
+lsFreeWordsProf <- 
+  reactive({
+    
+    if( nchar(input$freeText) == 0) { 
+      NULL 
+    } else {
+      
+      matRes <- 
+        lsaObj() %>% 
+        LSAMonRepresentByTerms( query = input$freeText ) %>% 
+        LSAMonTakeValue
+      
+      lsCSums <- colSums(matRes)
+      lsProf <- lsCSums[lsCSums>0]
+      
+      names(lsProf) <- paste0( "Word:", names(lsProf) )
+      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      rev(sort(lsProf))
+    }
+    
+  })
+
+lsFreeTopicsProf <- 
+  reactive({
+    
+    if( nchar(input$freeText) == 0) { 
+      NULL 
+    } else {
+      
+      matRes <- 
+        lsaObj() %>% 
+        LSAMonRepresentByTopics( query = input$freeText ) %>% 
+        LSAMonTakeValue
+      
+      matRes <- SMRApplyTermWeightFunctions( matRes, "None", "None", "Cosine" )
+      
+      lsCSums <- colSums(matRes)
+      lsProf <- lsCSums[lsCSums>0]
+      
+      names(lsProf) <- paste0( "Topic:", names(lsProf) )
+      lsProf <- lsProf[ names(lsProf) %in% colnames(smrObj()$M) ]
+      rev(sort(lsProf))
+    }
+    
+  })
+```
+
+
+Extracted words and topics:
+
+```{r}
+lsFreeProf <- reactive({ c( lsFreeWordsProf(), lsFreeTopicsProf() ) })
+DT::renderDataTable(
+  expr = data.frame( Word = names(lsFreeProf()), Score =  lsFreeProf() ),
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+)
+```
+
+Row
+-----------------------------------------------------------------------
+
+
+### Recommendations with both tags and free text
+
+```{r}
+lsProf <- 
+  reactive({ 
+    c( 
+      setNames( rep_len( x = 1, length.out = length(lsTagsProf())), lsTagsProf() ), 
+      lsFreeProf() 
+    ) 
+  })
+
+DT::renderDataTable(
+  if( is.null(lsProf()) || length(lsProf()) == 0 ) {
+    NULL
+  } else {
+    smrObj() %>% 
+      SMRMonApplyTagTypeWeights( 
+        weights = 
+          c( 
+            Word = input$wordTagTypeWeight, 
+            Topic = input$topicTagTypeWeight
+          )[ smrObj() %>% SMRMonTakeTagTypes ], 
+        default = 1 ) %>% 
+      SMRMonRecommendByProfile( profile = lsProf(), nrecs = input$numberOfRecs ) %>% 
+      SMRMonJoinAcross( dfData() ) %>% 
+      SMRMonTakeValue
+    },
+  options = list(scrollX = "300px", scrollY = "300px", scroller = TRUE)
+) 
+```
+
+Summary
+=======================================================================
+
+### Dimensions of the recommender matrix:
+
+```{r}
+renderText( dim(smrObj() %>% SMRMonTakeM) )
+```
+
+### Tag types and ranges:
+
+```{r}
+DT::renderDataTable( smrObj() %>% SMRMonTakeTagTypeRanges )
+```
+
+
+References
+=======================================================================
+
+#### In brief
+
+The data of the Fineli recommender was taken from
+[Fineli Open Data](https://fineli.fi/fineli/en/avoin-data), [FI1].
+
+That data was put in the R data package [FineliFoodData](https://github.com/antononcube/R-packages/tree/master/FineliFoodData)
+
+The data for the USDA recommender was taken from
+[NutrienTrackeR](https://CRAN.R-project.org/package=NutrienTrackeR), [ARp1].
+
+The recommenders were made with the packages 
+[`SMRMon-R`](https://github.com/antononcube/R-packages/tree/master/SMRMon-R)
+and
+[`LSAMon-R`](https://github.com/antononcube/R-packages/tree/master/LSAMon-R),
+[AAp1, AAp2, AAp3].
+
+
+#### Data
+
+[FI1] National Institute for Health and Welfare, Fineli,
+[Fineli food database](https://fineli.fi/fineli/en/avoin-data),
+https://fineli.fi.
+
+
+#### Packages 
+
+[ARp1] Andrea Rodriguez-Martinez, Rafael Ayala, Mark Balchunas, Yacine Debbabi, Lara Selles Vidal,
+[NutrienTrackeR](https://CRAN.R-project.org/package=NutrienTrackeR),
+(2021),
+[CRAN](https://github.com/AndreaRMICL).
+
+[ARr1] Andrea Rodriguez-Martinez, Rafael Ayala, Mark Balchunas, Yacine Debbabi, Lara Selles Vidal,
+[NutrienTrackeR](https://github.com/AndreaRMICL/NutrienTrackeR),
+(2018),
+[GitHub/AndreaRMICL](https://github.com/AndreaRMICL).
+
+[AAp1] Anton Antonov,
+[Sparse Matrix Recommender framework functions, R-package](https://github.com/antononcube/R-packages/tree/master/SparseMatrixRecommender),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+[AAp2] Anton Antonov,
+[Sparse Matrix Recommender Monad, R-package](https://github.com/antononcube/R-packages/tree/master/SMRMon-R),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+[AAp3] Anton Antonov,
+[Latent Semantic Analysis Monad, R-package](https://github.com/antononcube/R-packages/tree/master/LSAMon-R),
+(2019),
+[R-packages at GitHub/antononcube](https://github.com/antononcube/R-packages).
+
+

@@ -1,0 +1,12 @@
+name: FoodRecommenderInterface
+title: FoodRecommenderInterface
+username:
+account: antononcube
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3897708
+bundleId: 4420969
+url: https://antononcube.shinyapps.io/FoodRecommenderInterface/
+when: 1617290811.80551
+asMultiple: FALSE
+asStatic: FALSE
