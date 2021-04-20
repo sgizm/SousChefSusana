@@ -54,6 +54,7 @@
 *** TODO R [66%] [2/3]
 - [X] Foods/ingredients recommender
 - [ ] Recipe recommender
+  - Fineli Food Data
 - [X] Mock users recommender
 * Software architecture
 ** General strategy
@@ -86,8 +87,8 @@
 ** [[https://www.miamiwids.com][WiDS Miami 2021]]
 - Online conference.
 - [[https://www.papercall.io/widsmiami2021][Call for papers]]
-*** Abstract
-*** Paper features
+*** DONE Abstract
+*** MAYBE Paper features
 - Goals
   - Is this an advertisement of the project?
     - Meaning, collaboration invitation.
@@ -145,16 +146,32 @@
 - This is an app mostly for women. (Say/)
   - What would be the corresponding app for men?
     - Fishing suggestion app.
-*** TODO Presentation recording [0%] [0/4]
+*** DONE Presentation recording [40%] [2/5]
 DEADLINE: <2021-04-02 Fri>
-**** Sezin Slide deck
+**** DONE Slide deck
 - [ ] 2-4 slides
 - [ ] R
 - [ ] Mind-map
 - [ ] Mathematica notebook
 - [ ] R notebook
 - [ ] R shiny interface
+**** DONE Video recording
 **** Anton Supporting notebooks WL
 **** Anton Supporting code R
 **** Anton Dashboard in R
+* TODO Server demo [0%] [0/9]
+** TODO Get account on Digital Ocean
+- Or other similar service.
+** TODO Pick operating system
+- It seems any recent stable Ubuntu release is good.
+** TODO Install Raku 
+** TODO Install Cro
+- See https://cro.services
+** TODO Install Sous Chef Susana Raku packages
+** TODO Install R
+** TODO Install WolframEngine
+- Free for registered developes.
+** TODO Start the service 
+** TODO Run example code
+- E.g.g client side notebooks.
 
