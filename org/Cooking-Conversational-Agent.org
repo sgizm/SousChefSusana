@@ -146,7 +146,7 @@
 - This is an app mostly for women. (Say/)
   - What would be the corresponding app for men?
     - Fishing suggestion app.
-*** DONE Presentation recording [40%] [2/5]
+*** DONE Presentation recording [60%] [3/5]
 DEADLINE: <2021-04-02 Fri>
 **** DONE Slide deck
 - [ ] 2-4 slides
@@ -156,9 +156,62 @@ DEADLINE: <2021-04-02 Fri>
 - [ ] R notebook
 - [ ] R shiny interface
 **** DONE Video recording
-**** Anton Supporting notebooks WL
+**** DONE Supporting notebooks WL
 **** Anton Supporting code R
 **** Anton Dashboard in R
+*** DONE Post-submission preparation [100%] [6/6]
+- [X] Finish/test/commit the introspection queries parsing and interpretation
+- [X] Make sure all SCS Raku packages install
+- [X] Full-blown Morphological Analysis table
+- [X] Diagram of SCS components and their interaction
+- [X] Make sure the WL notebooks demo all implemented SCS commands
+- [X] Make a notebook with databases example
+* DONE Statistics [87%] [7/8]
+- We have to derive / collect some statistics about SCS.
+- [X] How many modules?
+  - By design, currently implemented [33%] [2/6]
+    1) [ ] User on-boarding
+    2) [X] Recommendations module
+       - [X] By history
+       - [X] By profile
+    3) [X] Introspection module
+       - [X] Timeline
+       - [X] Counts
+       - [X] Summary
+       - [X] Last time
+    4) [ ] Inventory module
+    5) [ ] Network engagement module
+    6) [ ] Real-time directions module
+- [X] How many total words/tokens are currently recognized?
+  - More than 1000.
+- [X] How many cuisines?
+  - Currently the same as many as countries and geo-regions
+    - 260
+- [X] How many dishes and foods?
+  - Currently the dish names are recognized but not hooked up.
+    - 2621 dishes
+    - 1437 foods
+- [X] How many grammar rules?
+  - Somewhat esoteric, but at least for us it might give a good
+    overview.
+  - 972
+- [X] Database sizes
+  - [X] Fineli
+    - Dishes: 2621
+    - Foods: 1437
+  - [X] USDA
+    - Foods: 7754
+  - [X] Meals
+    - Randomly generated
+  - [X] Users
+    - Randomly generated
+- [X] Related to 6, how many data structures / objects are used?
+  - I.e. How many databases and recommenders?
+  - 4 databases
+  - 3 recommenders
+- [ ] What is the longest dialog that can be / has been sustained?
+  - There are no dialog implementations yet, only "one liner" commands.
+  - The only context right now is the user ID and the user data.
 * TODO Server demo [0%] [0/9]
 ** TODO Get account on Digital Ocean
 - Or other similar service.
