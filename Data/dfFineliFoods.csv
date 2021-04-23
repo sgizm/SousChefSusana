@@ -1,4 +1,4 @@
-"id","name","edible_portion","food_type","processing_method","ingredient_category","food_category","ingredient_category2","food_category2"
+"ID","Name","EdiblePortion","FoodType","ProcessingMethod","IngredientCategory","FoodCategory","IngredientCategory2","FoodCategory2"
 1,"Sugar",100,"Food","Industrial","Sugar and syrups","Sugar and syrups","Sugar and confectionery","Sugar and confectionery"
 2,"Fructose",100,"Food","Industrial","Sugar and syrups","Sugar and syrups","Sugar and confectionery","Sugar and confectionery"
 3,"Syrup",100,"Food","Industrial","Sugar and syrups","Sugar and syrups","Sugar and confectionery","Sugar and confectionery"
